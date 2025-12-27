@@ -1,32 +1,80 @@
-def split_into_sections(content: dict):
+def split_into_sections(content: dict, source_url: str):
     sections = []
 
-    sections.append({
-        "id": "headings",
-        "type": "content",
-        "label": "Headings",
-        "items": content.get("headings", [])
-    })
+    # Headings section
+    if content.get("headings"):
+        sections.append({
+            "id": "section-headings",
+            "type": "section",
+            "label": "Headings",
+            "sourceUrl": source_url,
+            "content": {
+                "headings": [h["text"] for h in content["headings"]],
+                "text": "",
+                "links": [],
+                "images": [],
+                "lists": [],
+                "tables": []
+            },
+            "rawHtml": "<section>Headings extracted</section>",
+            "truncated": True
+        })
 
-    sections.append({
-        "id": "paragraphs",
-        "type": "content",
-        "label": "Paragraphs",
-        "items": content.get("paragraphs", [])
-    })
+    # Paragraphs section
+    if content.get("paragraphs"):
+        sections.append({
+            "id": "section-text",
+            "type": "section",
+            "label": "Main Content",
+            "sourceUrl": source_url,
+            "content": {
+                "headings": [],
+                "text": " ".join(content["paragraphs"]),
+                "links": [],
+                "images": [],
+                "lists": [],
+                "tables": []
+            },
+            "rawHtml": "<section>Main text extracted</section>",
+            "truncated": True
+        })
 
-    sections.append({
-        "id": "links",
-        "type": "content",
-        "label": "Links",
-        "items": content.get("links", [])
-    })
+    # Links section
+    if content.get("links"):
+        sections.append({
+            "id": "section-links",
+            "type": "list",
+            "label": "Links",
+            "sourceUrl": source_url,
+            "content": {
+                "headings": [],
+                "text": "",
+                "links": content["links"],
+                "images": [],
+                "lists": [],
+                "tables": []
+            },
+            "rawHtml": "<section>Links extracted</section>",
+            "truncated": True
+        })
 
-    sections.append({
-        "id": "images",
-        "type": "content",
-        "label": "Images",
-        "items": content.get("images", [])
-    })
+    # Images section
+    if content.get("images"):
+        sections.append({
+            "id": "section-images",
+            "type": "grid",
+            "label": "Images",
+            "sourceUrl": source_url,
+            "content": {
+                "headings": [],
+                "text": "",
+                "links": [],
+                "images": content["images"],
+                "lists": [],
+                "tables": []
+            },
+            "rawHtml": "<section>Images extracted</section>",
+            "truncated": True
+        })
 
     return sections

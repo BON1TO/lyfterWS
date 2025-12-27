@@ -32,8 +32,10 @@ def scrape_static(url: str):
         description["content"].strip() if description and "content" in description.attrs else ""
     )
 
-    html_tag = soup.find("html")
-    result["meta"]["language"] = html_tag.get("lang") if html_tag else ""
+    result["meta"]["language"] = (
+    html_tag.get("lang").split("-")[0] if html_tag and html_tag.get("lang") else "en"
+)
+
 
     canonical = soup.find("link", rel="canonical")
     result["meta"]["canonical"] = canonical.get("href") if canonical else None

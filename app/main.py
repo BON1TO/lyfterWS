@@ -37,10 +37,15 @@ def home(request: Request):
 def scrape(req: ScrapeRequest):
     errors = []
     interactions = {
-        "clicks": [],
-        "scrolls": 2,
-        "pages": [req.url]
-    }
+    "clicks": [],
+    "scrolls": 3,
+    "pages": [
+        req.url,
+        f"{req.url}?page=2",
+        f"{req.url}?page=3"
+    ]
+}
+
 
     final_data = None
     mode = None
@@ -75,7 +80,8 @@ def scrape(req: ScrapeRequest):
 
     # 3️⃣ Prepare response
     if final_data:
-        sections = split_into_sections(final_data["content"])
+        sections = split_into_sections(final_data["content"], req.url)
+
         meta = final_data["meta"]
         meta["mode"] = mode
     else:
