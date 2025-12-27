@@ -20,6 +20,30 @@ def scrape_js(url: str):
 
         page.goto(url, timeout=60000, wait_until="domcontentloaded")
 
+        # -------- NOISE FILTERING (JS) --------
+        page.evaluate("""
+() => {
+    const keywords = ['cookie', 'consent', 'modal', 'popup', 'overlay', 'newsletter'];
+
+    document.querySelectorAll('*').forEach(el => {
+        let className = '';
+        if (typeof el.className === 'string') {
+            className = el.className;
+        } else if (el.className && el.className.baseVal) {
+            className = el.className.baseVal;
+        }
+
+        const id = (el.id || '').toLowerCase();
+        const cls = className.toLowerCase();
+
+        if (keywords.some(k => id.includes(k) || cls.includes(k))) {
+            el.remove();
+        }
+    });
+}
+""")
+
+
         html = page.content()
         browser.close()
 
@@ -31,11 +55,17 @@ def scrape_js(url: str):
 
     description = soup.find("meta", attrs={"name": "description"})
     result["meta"]["description"] = (
-        description["content"].strip() if description and "content" in description.attrs else ""
+        description["content"].strip()
+        if description and "content" in description.attrs
+        else ""
     )
 
     html_tag = soup.find("html")
-    result["meta"]["language"] = html_tag.get("lang") if html_tag else ""
+    result["meta"]["language"] = (
+        html_tag.get("lang").split("-")[0]
+        if html_tag and html_tag.get("lang")
+        else "en"
+    )
 
     canonical = soup.find("link", rel="canonical")
     result["meta"]["canonical"] = canonical.get("href") if canonical else None

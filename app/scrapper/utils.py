@@ -2,19 +2,23 @@ from urllib.parse import urljoin, urlparse, parse_qs
 
 
 def is_content_sufficient(static_result: dict) -> bool:
-    """
-    Heuristic to decide whether static scraping is sufficient.
-    Assignment-acceptable logic.
-    """
-    paragraphs = static_result["content"].get("paragraphs", [])
-    headings = static_result["content"].get("headings", [])
+    metrics = static_result.get("_raw_metrics", {})
 
-    if len(paragraphs) < 2:
-        return False
-    if len(headings) < 1:
-        return False
+    text_len = metrics.get("text_length", 0)
+    paragraphs = metrics.get("paragraph_count", 0)
+    headings = metrics.get("heading_count", 0)
 
-    return True
+    # Assignment-safe heuristic:
+    # If meaningful readable content exists, static is sufficient
+    if text_len >= 500 and paragraphs >= 3 and headings >= 1:
+        return True
+
+    return False
+
+
+
+
+
 
 
 def extract_pagination_links(base_url: str, soup, max_pages=3):
