@@ -37,13 +37,18 @@ def home(request: Request):
 def scrape(req: ScrapeRequest):
     errors = []
     interactions = {
-    "clicks": [],
+    "clicks": [
+        "a:contains('Next')",
+        "button:contains('Load more')"
+    ],
     "scrolls": 3,
     "pages": [
         req.url,
         f"{req.url}?page=2",
         f"{req.url}?page=3"
     ]
+}
+
 }
 
 
