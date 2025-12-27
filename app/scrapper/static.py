@@ -1,4 +1,5 @@
 import httpx
+from .utils import extract_pagination_links
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 
